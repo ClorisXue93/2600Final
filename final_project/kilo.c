@@ -14,10 +14,17 @@
 #define CTRL_KEY(k) ((k) & 0x1f)
 
 enum editorKey {
+<<<<<<< HEAD
     ARROW_LEFT = 1000,
     ARROW_RIGHT,
     ARROW_UP,
     ARROW_DOWN
+=======
+    ARROW_LEFT = 'a',
+    ARROW_RIGHT = 'd',
+    ARROW_UP = 'w',
+    ARROW_DOWN = 's'
+>>>>>>> 5b182c59137abe3950611358f31784f5f3beffb8
 };
 
 // /*** data ***/
@@ -33,8 +40,13 @@ struct editorConfig E;
 
 /*** terminal ***/
 void die(const char *s) {
+<<<<<<< HEAD
     write(STDOUT_FILENO, "\x1b[2J", 4);
     write(STDOUT_FILENO, "\x1b[H", 3);
+=======
+    write(STDIN_FILENO, "\x1b[2J", 4);
+    write(STDIN_FILENO, "\x1b[H", 3);
+>>>>>>> 5b182c59137abe3950611358f31784f5f3beffb8
     perror(s);
     exit(1);
 }
@@ -61,28 +73,52 @@ void enableRawMode() {
         die("tcsetattr");
 }
 
+<<<<<<< HEAD
 int editorReadKey() {
     int nread;
     char c;
     while ((nread = read(STDIN_FILENO, &c, 1)) != 1) {
         if (nread == -1 && errno != EAGAIN) die("read");
     }
+=======
+char editoReadKey() {
+    int nread;
+    char c;
+    while ((nread = read(STDIN_FILENO, &c, 1)) != 1) {
+        if (nread == -1 && errno != EAGAIN)
+            die("read");
+    }
+
+>>>>>>> 5b182c59137abe3950611358f31784f5f3beffb8
     if (c == '\x1b') {
         char seq[3];
         if (read(STDIN_FILENO, &seq[0], 1) != 1) return '\x1b';
         if (read(STDIN_FILENO, &seq[1], 1) != 1) return '\x1b';
         if (seq[0] == '[') {
+<<<<<<< HEAD
             switch (seq[1]) {
                 case 'A': return ARROW_UP;
                 case 'B': return ARROW_DOWN;
                 case 'C': return ARROW_RIGHT;
                 case 'D': return ARROW_LEFT;
             }
+=======
+        switch (seq[1]) {
+            case 'A': return ARROW_UP;
+            case 'B': return ARROW_DOWN;
+            case 'C': return ARROW_RIGHT;
+            case 'D': return ARROW_LEFT;
+        }
+>>>>>>> 5b182c59137abe3950611358f31784f5f3beffb8
         }
         return '\x1b';
     } else {
         return c;
+<<<<<<< HEAD
   }
+=======
+    }
+>>>>>>> 5b182c59137abe3950611358f31784f5f3beffb8
 }
 
 int getCursorPosition(int *rows, int *cols) {
@@ -145,6 +181,7 @@ void editorDrawRows(struct abuf *ab) {
     int y;
     for (y = 0; y < E.screenrows; y++) {
         if (y == E.screenrows / 3) {
+<<<<<<< HEAD
             char welcome[80];
             int welcomelen = snprintf(welcome, sizeof(welcome),
                             "Kilo editor -- version %s", KILO_VERSION);
@@ -164,6 +201,29 @@ void editorDrawRows(struct abuf *ab) {
         abAppend(ab, "\x1b[K", 3);
         if (y < E.screenrows - 1) {
             abAppend(ab, "\r\n", 2);
+=======
+        char welcome[80];
+        int welcomelen = snprintf(welcome, sizeof(welcome),
+            "Kilo editor -- version %s", KILO_VERSION);
+        if (welcomelen > E.screencols) 
+            welcomelen = E.screencols;
+        int padding = (E.screencols - welcomelen) / 2;
+        if (padding) {
+            abAppend(ab, "~", 1);
+            padding--;
+        }
+        while (padding--) 
+            abAppend(ab, " ", 1);
+
+        abAppend(ab, welcome, welcomelen);
+    } else {
+        abAppend(ab, "~", 1);
+    }
+
+        abAppend(ab, "\x1b[K", 3);
+        if (y < E.screenrows - 1) {
+        abAppend(ab, "\r\n", 2);
+>>>>>>> 5b182c59137abe3950611358f31784f5f3beffb8
         }
     }
 }
@@ -173,6 +233,7 @@ void editorRefreshScreen() {
 
     abAppend(&ab, "\x1b[?25l", 6);
     abAppend(&ab, "\x1b[H", 3);
+<<<<<<< HEAD
 
     editorDrawRows(&ab);
     char buf[32];
@@ -180,12 +241,25 @@ void editorRefreshScreen() {
     abAppend(&ab, buf, strlen(buf));
     abAppend(&ab, "\x1b[?25l", 6);
 
+=======
+    editorDrawRows(&ab);
+
+    char buf[32];
+    snprintf(buf, sizeof(buf), "\x1b[%d;%dH", E.cy + 1, E.cx + 1);
+    abAppend(&ab, buf, strlen(buf));
+
+    abAppend(&ab, "\x1b[?25l", 6);
+>>>>>>> 5b182c59137abe3950611358f31784f5f3beffb8
     write(STDOUT_FILENO, ab.b, ab.len);
     abFree(&ab);
 }
 
 /*** input ***/
+<<<<<<< HEAD
 void editorMoveCursor(int key) {
+=======
+void editorMoveCursor(char key) {
+>>>>>>> 5b182c59137abe3950611358f31784f5f3beffb8
     switch (key) {
         case ARROW_LEFT:
             E.cx--;
@@ -203,6 +277,7 @@ void editorMoveCursor(int key) {
 }
 
 void editorProcessKeypress() {
+<<<<<<< HEAD
     int c = editorReadKey();
     switch (c) {
         case CTRL_KEY('q'):
@@ -210,6 +285,15 @@ void editorProcessKeypress() {
             write(STDOUT_FILENO, "\x1b[H", 3);
             exit(0);
             break;
+=======
+    char c = editoReadKey();
+    switch (c) {
+        case CTRL_KEY('q'):
+        write(STDIN_FILENO, "\x1b[2J", 4);
+        write(STDIN_FILENO, "\x1b[H", 3);
+        exit(0);
+        break;
+>>>>>>> 5b182c59137abe3950611358f31784f5f3beffb8
 
         case ARROW_UP:
         case ARROW_DOWN:
@@ -217,7 +301,11 @@ void editorProcessKeypress() {
         case ARROW_RIGHT:
             editorMoveCursor(c);
             break;
+<<<<<<< HEAD
     }
+=======
+    }   
+>>>>>>> 5b182c59137abe3950611358f31784f5f3beffb8
 }
 
 
@@ -232,8 +320,14 @@ void initEditor() {
 }
 
 int main () {
+<<<<<<< HEAD
     enableRawMode();
     initEditor();
+=======
+
+    initEditor();
+    enableRawMode();
+>>>>>>> 5b182c59137abe3950611358f31784f5f3beffb8
 
     while (1) {
         editorRefreshScreen();
